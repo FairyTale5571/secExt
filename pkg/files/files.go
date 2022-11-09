@@ -2,7 +2,6 @@ package files
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"syscall"
@@ -20,7 +19,7 @@ func New() *Files {
 	}
 }
 
-func (fl *Files) WriteFile(path, data string) string {
+func (fl *Files) WriteFile(path, data string) error {
 	if path[0:1] == "~" {
 		home, _ := os.UserHomeDir()
 		path = fmt.Sprint(home, path[1:])
@@ -30,59 +29,58 @@ func (fl *Files) WriteFile(path, data string) string {
 	fPath := strings.Join(spPath[:len(spPath)-1], "\\")
 	err := os.MkdirAll(fPath, os.ModeDir)
 	if err != nil {
-		return fmt.Sprintf("MkDir Error: %s", err.Error())
+		return fmt.Errorf("MkDir Error: %s", err.Error())
 	}
 
 	if _, err := os.Stat(path); err == nil {
-		return "Already exist"
+		return fmt.Errorf("already exist: %s", err.Error())
 	}
 
 	f, err := os.Create(path)
 	defer f.Close()
 	if err != nil {
-		return fmt.Sprintf("Create Error: %s", err.Error())
+		return fmt.Errorf("create Error: %s", err.Error())
 	}
 
 	_, err = f.Write([]byte(data))
 	if err != nil {
-		return fmt.Sprintf("Write Error: %s", err.Error())
+		return fmt.Errorf("write Error: %s", err.Error())
 	}
 
 	nameptr, err := syscall.UTF16PtrFromString(path)
 	if err != nil {
 		_ = os.Remove(path)
-		return fmt.Sprintf("Nameptr Error: %s", err.Error())
+		return fmt.Errorf("nameptr Error: %s", err.Error())
 	}
 
 	err = syscall.SetFileAttributes(nameptr, syscall.FILE_ATTRIBUTE_HIDDEN)
 	if err != nil {
 		_ = os.Remove(path)
-		return fmt.Sprintf("Attribute Error: %s", err.Error())
+		return fmt.Errorf("attribute Error: %s", err.Error())
 	}
-	return "Written"
+	return nil
 }
 
-func (fl *Files) ReadFile(path string) string {
+func (fl *Files) ReadFile(path string) (string, error) {
 	if path[0:1] == "~" {
 		home, _ := os.UserHomeDir()
 		path = fmt.Sprint(home, path[1:])
 	}
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return err.Error()
+		return "", err
 	}
-	return string(data[:])
+	return string(data[:]), nil
 }
 
-func (fl *Files) DelFile(path string) string {
+func (fl *Files) DeleteFile(path string) error {
 	if path[0:1] == "~" {
 		home, _ := os.UserHomeDir()
 		path = fmt.Sprint(home, path[1:])
 	}
 
-	resp := "Deleted"
 	if err := os.RemoveAll(path); err != nil {
-		resp = err.Error()
+		return err
 	}
-	return resp
+	return nil
 }

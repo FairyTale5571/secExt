@@ -8,6 +8,7 @@ package main
 import "C"
 import (
 	"fmt"
+	"regexp"
 	"unsafe"
 
 	"github.com/fairytale5571/secExt/pkg/app"
@@ -70,6 +71,24 @@ var (
 	*/
 )
 
+func cleanInput(argv **C.char, argc int) []string {
+	newArgs := make([]string, argc)
+	offset := unsafe.Sizeof(uintptr(0))
+	i := 0
+	for i < argc {
+		_arg := (**C.char)(unsafe.Pointer(uintptr(unsafe.Pointer(argv)) + offset*uintptr(i)))
+		arg := C.GoString(*_arg)
+		arg = arg[1 : len(arg)-1]
+
+		reArg := regexp.MustCompile(`""`)
+		arg = reArg.ReplaceAllString(arg, `"`)
+
+		newArgs[i] = arg
+		i++
+	}
+	return newArgs
+}
+
 //export goRVExtensionVersion
 func goRVExtensionVersion(output *C.char, outputSize C.size_t) {
 	PrintInArma(output, outputSize, "secExt_v6")
@@ -85,22 +104,198 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 		}
 	}
 	// Return by default through ExtensionCallback arma handler the result
-	offset := unsafe.Sizeof(uintptr(0))
-	var out []string
-	for index := C.int(0); index < argc; index++ {
-		out = append(out, C.GoString(*argv))
-		argv = (**C.char)(unsafe.Pointer(uintptr(unsafe.Pointer(argv)) + offset))
+	clearArgs := cleanInput(argv, int(argc))
+	action := C.GoString(input)
+	var r string
+	switch action {
+	case "info":
+		PrintInArma(output, outputSize, a.Info())
+	case "goarch":
+		PrintInArma(output, outputSize, a.GoArch())
+	case "close":
+		a.Close()
+	case "version":
+		PrintInArma(output, outputSize, a.Version())
+	case "4_c":
+		a.CleanTemp()
+	case "isAdmin":
+		PrintInArma(output, outputSize, a.IsAdmin())
+	case "get_HWID":
+		r = a.ReadRegistry("HKEY_LOCAL_MACHINE", `SOFTWARE\Microsoft\Cryptography`, "MachineGuid")
+		PrintInArma(output, outputSize, r)
+	case "get_HDDUID":
+		PrintInArma(output, outputSize, "deprecated")
+	case "get_Process":
+		PrintInArma(output, outputSize, a.GetProcesses())
+	case "get_MAC":
+		PrintInArma(output, outputSize, a.GetMacAddr())
+	case "get_GUID":
+		r = a.ReadRegistry("current_user", `Software\Classes\mscfile\shell\open\command`, "GUID")
+		PrintInArma(output, outputSize, r)
+	case "get_IP":
+		PrintInArma(output, outputSize, a.GetIP())
+	case "get_GeoIP":
+		PrintInArma(output, outputSize, a.GetGeoIP())
+	case "get_Sd":
+		PrintInArma(output, outputSize, a.GetDiscordArray())
+	case "get_SD_ID":
+		PrintInArma(output, outputSize, a.GetDiscordID())
+	case "get_SD_User":
+		PrintInArma(output, outputSize, a.GetDiscordUsername())
+	case "GetCPU_id":
+		r, err = a.Wmi.GetCpuId()
+		if err != nil {
+			PrintInArma(output, outputSize, "cpu undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetCPU_name":
+		r, err = a.Wmi.GetCpuName()
+		if err != nil {
+			PrintInArma(output, outputSize, "cpu undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetMother_id":
+		r, err = a.Wmi.GetMotherId()
+		if err != nil {
+			PrintInArma(output, outputSize, "mother undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetMother_name":
+		r, err = a.Wmi.GetMotherName()
+		if err != nil {
+			PrintInArma(output, outputSize, "mother undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetBios_id":
+		r, err = a.Wmi.GetBiosId()
+		if err != nil {
+			PrintInArma(output, outputSize, "bios undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetBios_ReleaseDate":
+		r, err = a.Wmi.GetBiosReleaseDate()
+		if err != nil {
+			PrintInArma(output, outputSize, "bios undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetBios_Version":
+		r, err = a.Wmi.GetBiosVersion()
+		if err != nil {
+			PrintInArma(output, outputSize, "bios undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetRam_serialNumber":
+		r, err = a.Wmi.GetRamSerialNumber()
+		if err != nil {
+			PrintInArma(output, outputSize, "ram undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetRam_capacity":
+		r, err = a.Wmi.GetRamCapacity()
+		if err != nil {
+			PrintInArma(output, outputSize, "ram undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetRam_partNumber":
+		r, err = a.Wmi.GetRamPartNumber()
+		if err != nil {
+			PrintInArma(output, outputSize, "ram undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetRam_Name":
+		r, err = a.Wmi.GetRamName()
+		if err != nil {
+			PrintInArma(output, outputSize, "ram undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetProduct_Date":
+		r, err = a.Wmi.GetProductInstallDate()
+		if err != nil {
+			PrintInArma(output, outputSize, "product undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetProduct_Version":
+		r, err = a.Wmi.GetProductVersion()
+		if err != nil {
+			PrintInArma(output, outputSize, "product undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "Get_Drives":
+		r, err = a.Wmi.GetDiskDrives()
+		if err != nil {
+			PrintInArma(output, outputSize, "drives undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "get_Product":
+		r, err = a.Wmi.GetProductId()
+		if err != nil {
+			PrintInArma(output, outputSize, "product undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "GetPC_name":
+		r, err = a.Wmi.GetPcName()
+		if err != nil {
+			PrintInArma(output, outputSize, "pc undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "Get_SID":
+		r, err = a.Wmi.GetSID()
+		if err != nil {
+			PrintInArma(output, outputSize, "sid undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "Get_VRAM_name":
+		r, err = a.Wmi.GetVRAM()
+		if err != nil {
+			PrintInArma(output, outputSize, "vram undefined")
+			return
+		}
+		PrintInArma(output, outputSize, r)
+	case "setEnv":
+		if len(clearArgs) < 2 {
+			PrintInArma(output, outputSize, "setEnv: not enough arguments")
+			return
+		}
+		go a.SetEnv(clearArgs[0], clearArgs[1])
+		PrintInArma(output, outputSize, "ok")
+	case "getEnv":
+		if len(clearArgs) < 1 {
+			PrintInArma(output, outputSize, "getEnv: not enough arguments")
+			return
+		}
+		PrintInArma(output, outputSize, a.GetEnv(clearArgs[0]))
+	case "1_c":
+	case "2_c":
+	case "3_c":
+	case "3_c_t":
+	case "1_r":
+	case "2_r":
+	case "3_r":
+	case "1_f":
+	case "2_f":
+	case "3_f":
+	default:
+		temp := fmt.Sprintf("Function: %s nb params: %d params: %s!", C.GoString(input), argc, clearArgs)
+		a.Logger.Errorf(temp)
+		PrintInArma(output, outputSize, temp)
 	}
-	temp := fmt.Sprintf("Function: %s nb params: %d params: %s!", C.GoString(input), argc, out)
-	a.Logger.Errorf(temp)
-	// Return a result to Arma
-	result := C.CString(temp)
-	defer C.free(unsafe.Pointer(result))
-	size := C.strlen(result) + 1
-	if size > outputSize {
-		size = outputSize
-	}
-	C.memmove(unsafe.Pointer(output), unsafe.Pointer(result), size)
 }
 
 func PrintInArma(output *C.char, outputSize C.size_t, input string) {
@@ -116,9 +311,7 @@ func PrintInArma(output *C.char, outputSize C.size_t, input string) {
 
 //export goRVExtension
 func goRVExtension(output *C.char, outputSize C.size_t, input *C.char) {
-	fmt.Println("goRVExtension")
-	str := C.GoString(input)
-	PrintInArma(output, outputSize, str)
+	goRVExtensionArgs(output, outputSize, input, nil, C.int(0))
 }
 
 func main() {}

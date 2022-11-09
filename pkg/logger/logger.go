@@ -84,11 +84,12 @@ func New(service string) *Wrapper {
 	log.lg.SetOutput(os.Stdout)
 	log.lg.SetLevel(logrus.DebugLevel)
 	log.entry = log.lg.WithFields(logrus.Fields{
-		"service": service,
-		"Steam":   log.steam.GetPlayerUid(),
-		"arch":    runtime.GOARCH,
-		"isAdmin": helpers.IsAdmin(),
-		"windows": runtime.GOOS,
+		"service":  service,
+		"SteamUID": log.steam.GetPlayerUid(),
+		"arch":     runtime.GOARCH,
+		"isAdmin":  helpers.IsAdmin(),
+		"windows":  runtime.GOOS,
+		"path":     log.steam.GetInstalledPathGame(),
 	})
 	defer dlog.Close(context.Background())
 	log.lg.AddHook(dlog)

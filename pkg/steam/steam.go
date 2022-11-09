@@ -46,3 +46,16 @@ func (s *Steam) GetPlayerUid() string {
 	}
 	return fmt.Sprintf("%d", sid)
 }
+
+func (s *Steam) GetInstalledPathGame() string {
+	if res, err := s.cache.Get("SteamName"); err != nil && res != "" {
+		return res
+	}
+
+	name := steamworks.SteamApps().GetAppInstallDir(steamAppId)
+	err := s.cache.Set("SteamName", name)
+	if err != nil {
+		return err.Error()
+	}
+	return name
+}

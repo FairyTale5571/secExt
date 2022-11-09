@@ -17,101 +17,212 @@ func New() *Wmi {
 	}
 }
 
-func (w *Wmi) GetCpuId() string {
-	return fmt.Sprintf(getCPU()[0].ProcessorId)
-}
-
-func (w *Wmi) GetCpuName() string {
-	return fmt.Sprintf(getCPU()[0].Name)
-}
-
-func (w *Wmi) GetMotherId() string {
-	return fmt.Sprintf(getMother()[0].SerialNumber)
-}
-
-func (w *Wmi) GetMotherName() string {
-	return fmt.Sprintf("Motherboard %s", getMother()[0].Product)
-}
-
-func (w *Wmi) GetRamSerialNumber() string {
-	var numbers []string
-
-	for idx := range getRAM() {
-		numbers = append(numbers, getRAM()[idx].SerialNumber)
+func (w *Wmi) GetCpuId() (string, error) {
+	r, err := getCPU()
+	if err != nil {
+		return "", nil
 	}
-	return helpers.Struct2JSON(numbers)
-}
-
-func (w *Wmi) GetRamPartNumber() string {
-	var numbers []string
-
-	for idx := range getRAM() {
-		numbers = append(numbers, getRAM()[idx].PartNumber)
+	if len(r) == 0 {
+		return "", fmt.Errorf("no cpu found")
 	}
-	return helpers.Struct2JSON(numbers)
+	return fmt.Sprintf(r[0].ProcessorId), nil
 }
 
-func (w *Wmi) GetRamName() string {
-	var numbers []string
-
-	for idx := range getRAM() {
-		numbers = append(numbers, getRAM()[idx].Manufacturer)
+func (w *Wmi) GetCpuName() (string, error) {
+	r, err := getCPU()
+	if err != nil {
+		return "", err
 	}
-	return helpers.Struct2JSON(numbers)
+	if len(r) == 0 {
+		return "", fmt.Errorf("no cpu found")
+	}
+	return fmt.Sprintf(r[0].Name), nil
 }
 
-func (w *Wmi) GetRamCapacity() string {
-	var memory uint64 = 0
-	for idx := range getRAM() {
-		memory += getRAM()[idx].Capacity
+func (w *Wmi) GetMotherId() (string, error) {
+	r, err := getMother()
+	if err != nil {
+		return "", err
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no motherboard found")
+	}
+	return fmt.Sprintf(r[0].SerialNumber), nil
+}
+
+func (w *Wmi) GetMotherName() (string, error) {
+	r, err := getMother()
+	if err != nil {
+		return "", err
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no motherboard found")
+	}
+	return fmt.Sprintf("Motherboard %s", r[0].Product), nil
+}
+
+func (w *Wmi) GetRamSerialNumber() (string, error) {
+	var numbers []string
+	r, err := getRAM()
+	if err != nil {
+		return "", err
+	}
+	for idx := range r {
+		numbers = append(numbers, r[idx].SerialNumber)
+	}
+	return helpers.Struct2JSON(numbers), nil
+}
+
+func (w *Wmi) GetRamPartNumber() (string, error) {
+	var numbers []string
+	r, err := getRAM()
+	if err != nil {
+		return "", err
+	}
+
+	for _, v := range r {
+		numbers = append(numbers, v.PartNumber)
+	}
+	return helpers.Struct2JSON(numbers), nil
+}
+
+func (w *Wmi) GetRamName() (string, error) {
+	var numbers []string
+	r, err := getRAM()
+	if err != nil {
+		return "", err
+	}
+
+	for _, v := range r {
+		numbers = append(numbers, v.Manufacturer)
+	}
+	return helpers.Struct2JSON(numbers), nil
+}
+
+func (w *Wmi) GetRamCapacity() (string, error) {
+	var memory uint64
+	r, err := getRAM()
+	if err != nil {
+		return "", err
+	}
+	for _, v := range r {
+		memory += v.Capacity
 	}
 	size, bytef := helpers.ConvertSize(memory)
-	return fmt.Sprintf("%d %v", size, bytef)
+	return fmt.Sprintf("%d %v", size, bytef), nil
 }
 
-func (w *Wmi) GetProductId() string {
-	return fmt.Sprintf(getOS()[0].SerialNumber)
+func (w *Wmi) GetProductId() (string, error) {
+	r, err := getOS()
+	if err != nil {
+		return "", err
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no os found")
+	}
+	return fmt.Sprintf(r[0].SerialNumber), nil
 }
 
-func (w *Wmi) GetProductInstallDate() string {
-	return fmt.Sprintf("%v", getOS()[0].InstallDate)
+func (w *Wmi) GetProductInstallDate() (string, error) {
+	r, err := getOS()
+	if err != nil {
+		return "", err
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no os found")
+	}
+	return fmt.Sprintf("%v", r[0].InstallDate), nil
 }
 
-func (w *Wmi) GetProductVersion() string {
-	return fmt.Sprintf(getOS()[0].Version)
+func (w *Wmi) GetProductVersion() (string, error) {
+	r, err := getOS()
+	if err != nil {
+		return "", err
+
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no os found")
+	}
+	return fmt.Sprintf(r[0].Version), nil
 }
 
-func (w *Wmi) GetBiosId() string {
-	return fmt.Sprintf(getBios()[0].SerialNumber)
+func (w *Wmi) GetBiosId() (string, error) {
+	r, err := getBios()
+	if err != nil {
+		return "", err
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no bios found")
+	}
+
+	return fmt.Sprintf(r[0].SerialNumber), nil
 }
 
-func (w *Wmi) GetBiosReleaseDate() string {
-	return getBios()[0].ReleaseDate.String()
+func (w *Wmi) GetBiosReleaseDate() (string, error) {
+	r, err := getBios()
+	if err != nil {
+		return "", err
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no bios found")
+	}
+	return r[0].ReleaseDate.String(), nil
 }
 
-func (w *Wmi) GetBiosVersion() string {
-	return fmt.Sprintf(getBios()[0].Version)
+func (w *Wmi) GetBiosVersion() (string, error) {
+	r, err := getBios()
+	if err != nil {
+		return "", err
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no bios found")
+	}
+	return fmt.Sprintf(r[0].Version), nil
 }
 
-func (w *Wmi) GetPcName() string {
-	return fmt.Sprintf(getCPU()[0].SystemName)
+func (w *Wmi) GetPcName() (string, error) {
+	r, err := getCPU()
+	if err != nil {
+		return "", err
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no cpu found")
+	}
+	return fmt.Sprintf(r[0].SystemName), nil
 }
 
-func (w *Wmi) GetSID() string {
-	return fmt.Sprintf(getUserAccount().SID)
+func (w *Wmi) GetSID() (string, error) {
+	r, err := getUserAccount()
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf(r.SID), nil
 }
 
-func (w *Wmi) GetVRAM() string {
-	return getVRAM()
+func (w *Wmi) GetVRAM() (string, error) {
+	r, err := getVRAM()
+	if err != nil {
+		return "", err
+	}
+	return r, nil
 }
 
-func (w *Wmi) GetCSP() string {
-	return getCSP()[0].Name
+func (w *Wmi) GetCSP() (string, error) {
+	r, err := getCSP()
+	if err != nil {
+		return "", err
+	}
+	if len(r) == 0 {
+		return "", fmt.Errorf("no csp found")
+	}
+	return r[0].Name, nil
 }
 
-func (w *Wmi) GetDiskDrives() string {
-	drives := getDiskDrive()
-
+func (w *Wmi) GetDiskDrives() (string, error) {
+	drives, err := getDiskDrive()
+	if err != nil {
+		return "", err
+	}
 	drive := "["
 	var size uint64
 	var str string
@@ -124,5 +235,5 @@ func (w *Wmi) GetDiskDrives() string {
 		}
 	}
 	drive += "]"
-	return drive
+	return drive, nil
 }

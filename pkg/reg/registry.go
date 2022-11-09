@@ -36,7 +36,7 @@ func (r *Reg) getGoCategory(category string) registry.Key {
 	return goCategory
 }
 
-func (r *Reg) WriteReg(category, path, key, value string) string {
+func (r *Reg) WriteReg(category, path, key, value string) error {
 	goCategory := r.getGoCategory(category)
 
 	k, err := registry.OpenKey(goCategory, path, registry.QUERY_VALUE|registry.SET_VALUE|registry.ALL_ACCESS)
@@ -45,15 +45,15 @@ func (r *Reg) WriteReg(category, path, key, value string) string {
 	if err != nil {
 		k, _, err = registry.CreateKey(goCategory, path, registry.QUERY_VALUE|registry.SET_VALUE|registry.ALL_ACCESS)
 		if err != nil {
-			return err.Error()
+			return err
 		}
 	}
 
 	err = k.SetStringValue(key, value)
 	if err != nil {
-		return err.Error()
+		return err
 	}
-	return "Written"
+	return nil
 }
 
 func (r *Reg) ReadReg(category, path, value string) (string, error) {
@@ -71,10 +71,10 @@ func (r *Reg) ReadReg(category, path, value string) (string, error) {
 	return s, nil
 }
 
-func (r *Reg) DelReg(category, path, value string) string {
+func (r *Reg) DeleteReg(category, path, value string) error {
 	goCategory := r.getGoCategory(category)
 	if err := registry.DeleteKey(goCategory, path); err != nil {
-		return err.Error()
+		return err
 	}
-	return "Deleted"
+	return nil
 }
