@@ -3,6 +3,7 @@ package ds
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/fairytale5571/secExt/pkg/cache"
 	"github.com/fairytale5571/secExt/pkg/logger"
 
@@ -36,8 +37,8 @@ func New() (*DS, error) {
 }
 
 func (d *DS) parseData() (string, error) {
-	if res, err := d.cache.Get("DiscordId"); err != nil && res != "" {
-		return res, nil
+	if d.cache.IsExist("DiscordId") {
+		return d.cache.Get("DiscordId")
 	}
 
 	read, err := d.rpc.Read()
@@ -53,11 +54,11 @@ func (d *DS) parseData() (string, error) {
 	}
 	str = fmt.Sprint("\n", str)
 
-	if err := d.cache.Set("discord", str); err != nil {
+	if err := d.cache.Set("DiscordId", str); err != nil {
 		d.logger.Infof("Error setting cache: %s", err.Error())
 	}
 
-	return read, nil
+	return str, nil
 }
 
 func (d *DS) GetID() (string, error) {

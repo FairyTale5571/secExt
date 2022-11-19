@@ -27,8 +27,13 @@ func (m *Memory) Get(key string) (string, error) {
 }
 
 func (m *Memory) Set(key, value string) error {
-	m.client.Set(key, value, gocache.DefaultExpiration)
+	m.client.Set(key, value, 15*time.Minute)
 	return nil
+}
+
+func (m *Memory) IsExist(key string) bool {
+	_, ok := m.client.Items()[key]
+	return ok
 }
 
 func (m *Memory) Delete(key string) {

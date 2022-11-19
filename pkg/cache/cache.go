@@ -15,6 +15,7 @@ type Cache interface {
 	Get(key string) (string, error)
 	Set(key, value string) error
 	Delete(key string)
+	IsExist(key string) bool
 }
 
 type Config struct {
@@ -39,4 +40,8 @@ func (c *Config) Set(key, value string) error {
 		return errs.ErrorCantCacheMemory
 	}
 	return nil
+}
+
+func (c *Config) IsExist(s string) bool {
+	return c.memory.IsExist(s)
 }

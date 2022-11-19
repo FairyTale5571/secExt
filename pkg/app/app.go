@@ -3,10 +3,13 @@ package app
 import (
 	"bytes"
 	"fmt"
-	"github.com/fairytale5571/secExt/pkg/ds"
 	"net"
 	"os"
 	"runtime"
+
+	"github.com/fairytale5571/secExt/pkg/drive"
+	"github.com/fairytale5571/secExt/pkg/ds"
+	"github.com/fairytale5571/secExt/pkg/uuid"
 
 	"github.com/fairytale5571/secExt/pkg/env"
 	"github.com/fairytale5571/secExt/pkg/files"
@@ -26,6 +29,7 @@ type App struct {
 	IP      *ip.IP
 	Env     *env.Env
 	discord *ds.DS
+	Drive   *drive.Drive
 }
 
 func New(args ...string) (*App, error) {
@@ -43,6 +47,7 @@ func New(args ...string) (*App, error) {
 		IP:      ip.New(),
 		Env:     env.New(),
 		discord: dsRPC,
+		Drive:   drive.New(),
 	}, nil
 }
 
@@ -216,4 +221,8 @@ func (a *App) GetIP() string {
 
 func (a *App) GetGeoIP() string {
 	return a.IP.GetGeoIp()
+}
+
+func (a *App) GetUUID() string {
+	return uuid.GenerateUUID()
 }

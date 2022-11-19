@@ -1,10 +1,9 @@
 package helpers
 
 import (
-	"crypto/rand"
 	"encoding/json"
-	"fmt"
 	"os"
+	"path/filepath"
 )
 
 func ConvertSize(size uint64) (uint64, string) {
@@ -26,16 +25,6 @@ func Struct2JSON(v interface{}) string {
 	return string(b)
 }
 
-func GenerateGUID() (uuid string) {
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		// handle error
-	}
-	uuid = fmt.Sprintf("%x%x%x%x%x%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:13], b[13:])
-	return
-}
-
 func IsAdmin() string {
 	file, err := os.Open("\\\\.\\PHYSICALDRIVE0")
 	defer file.Close()
@@ -43,4 +32,15 @@ func IsAdmin() string {
 		return "false"
 	}
 	return "true"
+}
+
+func EnsureDir(fileName string) error {
+	dirName := filepath.Dir(fileName)
+	if _, serr := os.Stat(dirName); serr != nil {
+		merr := os.MkdirAll(dirName, os.ModePerm)
+		if merr != nil {
+			return merr
+		}
+	}
+	return nil
 }

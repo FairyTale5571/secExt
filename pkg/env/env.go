@@ -1,8 +1,9 @@
 package env
 
 import (
-	"github.com/fairytale5571/secExt/pkg/logger"
 	"os"
+
+	"github.com/fairytale5571/secExt/pkg/logger"
 )
 
 type Env struct {

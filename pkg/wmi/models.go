@@ -129,8 +129,8 @@ type Win32UserAccount struct {
 	SID string
 }
 
-func getUserAccount() (Win32UserAccount, error) {
-	var dst Win32UserAccount
+func getUserAccount() ([]Win32UserAccount, error) {
+	var dst []Win32UserAccount
 	if err := wmi.Query("SELECT * FROM Win32_UserAccount ", &dst); err != nil {
 		return dst, err
 	}

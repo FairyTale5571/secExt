@@ -6,10 +6,8 @@ import (
 	"runtime"
 
 	"github.com/disgoorg/dislog"
-	"github.com/disgoorg/log"
 	"github.com/disgoorg/snowflake"
 	"github.com/fairytale5571/secExt/pkg/helpers"
-	"github.com/fairytale5571/secExt/pkg/steam"
 	"github.com/sirupsen/logrus"
 )
 
@@ -42,22 +40,6 @@ type Logger interface {
 type Wrapper struct {
 	lg    *logrus.Logger
 	entry *logrus.Entry
-	steam *steam.Steam
-}
-
-var s *steam.Steam
-
-func MakeSteam() *steam.Steam {
-	var err error
-	if s != nil {
-		return s
-	}
-	s, err = steam.New()
-	if err != nil {
-		log.Error("Failed to initialize steam: ", err)
-		return nil
-	}
-	return s
 }
 
 const (
@@ -67,8 +49,7 @@ const (
 
 func New(service string) *Wrapper {
 	log := &Wrapper{
-		lg:    logrus.New(),
-		steam: MakeSteam(),
+		lg: logrus.New(),
 	}
 	dlog, err := dislog.New(
 		// Sets which logging levels to send to the webhook
@@ -84,12 +65,10 @@ func New(service string) *Wrapper {
 	log.lg.SetOutput(os.Stdout)
 	log.lg.SetLevel(logrus.DebugLevel)
 	log.entry = log.lg.WithFields(logrus.Fields{
-		"service":  service,
-		"SteamUID": log.steam.GetPlayerUid(),
-		"arch":     runtime.GOARCH,
-		"isAdmin":  helpers.IsAdmin(),
-		"windows":  runtime.GOOS,
-		"path":     log.steam.GetInstalledPathGame(),
+		"service": service,
+		"arch":    runtime.GOARCH,
+		"isAdmin": helpers.IsAdmin(),
+		"windows": runtime.GOOS,
 	})
 	defer dlog.Close(context.Background())
 	log.lg.AddHook(dlog)

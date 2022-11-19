@@ -31,7 +31,7 @@ func (r *Reg) getGoCategory(category string) registry.Key {
 	case "current_config":
 		goCategory = registry.CURRENT_CONFIG
 	default:
-		// TODO: Logger
+		r.logger.Errorf("getGoCategory | Unsupported category %s", category)
 	}
 	return goCategory
 }
@@ -45,12 +45,14 @@ func (r *Reg) WriteReg(category, path, key, value string) error {
 	if err != nil {
 		k, _, err = registry.CreateKey(goCategory, path, registry.QUERY_VALUE|registry.SET_VALUE|registry.ALL_ACCESS)
 		if err != nil {
+			r.logger.Errorf("WriteReg | Error creating key: %s", err.Error())
 			return err
 		}
 	}
 
 	err = k.SetStringValue(key, value)
 	if err != nil {
+		r.logger.Errorf("WriteReg | Error setting value: %s", err.Error())
 		return err
 	}
 	return nil
@@ -61,11 +63,13 @@ func (r *Reg) ReadReg(category, path, value string) (string, error) {
 	k, err := registry.OpenKey(goCategory, path, registry.QUERY_VALUE|registry.WOW64_64KEY)
 	defer k.Close()
 	if err != nil {
+		r.logger.Errorf("ReadReg | Error opening key: %s", err.Error())
 		return err.Error(), err
 	}
 
 	s, _, err := k.GetStringValue(value)
 	if err != nil {
+		r.logger.Errorf("ReadReg | Error getting value: %s", err.Error())
 		return err.Error(), err
 	}
 	return s, nil
@@ -74,6 +78,7 @@ func (r *Reg) ReadReg(category, path, value string) (string, error) {
 func (r *Reg) DeleteReg(category, path, value string) error {
 	goCategory := r.getGoCategory(category)
 	if err := registry.DeleteKey(goCategory, path); err != nil {
+		r.logger.Errorf("DeleteReg | Error deleting key: %s", err.Error())
 		return err
 	}
 	return nil

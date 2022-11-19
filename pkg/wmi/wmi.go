@@ -138,7 +138,6 @@ func (w *Wmi) GetProductVersion() (string, error) {
 	r, err := getOS()
 	if err != nil {
 		return "", err
-
 	}
 	if len(r) == 0 {
 		return "", fmt.Errorf("no os found")
@@ -196,7 +195,10 @@ func (w *Wmi) GetSID() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf(r.SID), nil
+	if len(r) == 0 {
+		return "", fmt.Errorf("sid array empty")
+	}
+	return fmt.Sprintf(r[0].SID), nil
 }
 
 func (w *Wmi) GetVRAM() (string, error) {

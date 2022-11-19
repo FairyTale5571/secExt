@@ -2,7 +2,7 @@
 
 extern void goRVExtension(char *output, size_t outputSize, char *input);
 extern void goRVExtensionVersion(char *output, size_t outputSize);
-extern void goRVExtensionArgs(char* output, size_t outputSize, char* input, char** argv, int argc);
+extern int goRVExtensionArgs(char* output, size_t outputSize, char* input, char** argv, int argc);
 
 #ifdef WIN64
 __declspec(dllexport) void RVExtension(char *output, size_t outputSize, char *input) {
@@ -11,7 +11,7 @@ __declspec(dllexport) void RVExtension(char *output, size_t outputSize, char *in
 __declspec(dllexport) void RVExtensionVersion(char *output, size_t outputSize) {
 	goRVExtensionVersion(output, outputSize);
 }
-__declspec(dllexport) void RVExtensionArgs(char* output, size_t outputSize, char* input, char** argv, int argc) {
+__declspec(dllexport) int RVExtensionArgs(char* output, size_t outputSize, char* input, char** argv, int argc) {
 	goRVExtensionArgs(output, outputSize, input, argv, argc);
 }
 #else

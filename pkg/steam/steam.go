@@ -2,7 +2,6 @@ package steam
 
 import (
 	"fmt"
-	"unsafe"
 
 	"github.com/fairytale5571/secExt/pkg/cache"
 	"github.com/fairytale5571/secExt/pkg/errs"
@@ -14,7 +13,8 @@ const (
 )
 
 type Steam struct {
-	cache *cache.Config
+	cache  *cache.Config
+	inited bool
 }
 
 func New() (*Steam, error) {
@@ -22,32 +22,31 @@ func New() (*Steam, error) {
 		cache: cache.SetupCache(),
 	}
 
+	return res, res.Init()
+}
+
+func (s *Steam) Init() error {
 	if steamworks.RestartAppIfNecessary(steamAppId) {
-		return nil, errs.ErrorSteamRestartRequired
+		fmt.Println("need restart")
+		return errs.ErrorSteamRestartRequired
 	}
-	if !steamworks.Init() {
-		return nil, errs.ErrorSteamNotInitialized
-	}
-	return res, nil
+	s.inited = steamworks.Init()
+	return nil
 }
 
 func (s *Steam) GetPlayerUid() string {
-	if res, err := s.cache.Get("SteamId"); err != nil && res != "" {
-		return res
-	}
-
+	s.Init()
 	sid := steamworks.SteamUser().GetSteamID()
-	if unsafe.Sizeof(int(0)) == 4 {
-		sid += 76561197960265728
-	}
 	err := s.cache.Set("SteamId", fmt.Sprintf("%d", sid))
 	if err != nil {
 		return err.Error()
 	}
-	return fmt.Sprintf("%d", sid)
+
+	return fmt.Sprintf("%d", 234341)
 }
 
 func (s *Steam) GetInstalledPathGame() string {
+	s.Init()
 	if res, err := s.cache.Get("SteamName"); err != nil && res != "" {
 		return res
 	}
