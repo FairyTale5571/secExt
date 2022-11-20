@@ -47,16 +47,14 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 	var err error
 	clearArgs := cleanInput(argv, int(argc))
 	action := C.GoString(input)
+	if a == nil {
+		a, err = app.New()
+		if err != nil {
+			a.Logger.Fatalf("Error start application secExt: %s", err)
+		}
+	}
 	var r string
 	switch action {
-	case "start":
-		if a == nil {
-			a, err = app.New()
-			if err != nil {
-				a.Logger.Fatalf("Error start application secExt: %s", err)
-			}
-		}
-		PrintInArma(output, outputSize, "SecExt Started")
 	case "info":
 		PrintInArma(output, outputSize, a.Info())
 	case "goarch":
@@ -72,15 +70,10 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 	case "get_HWID":
 		r = a.ReadRegistry("local_machine", `SOFTWARE\Microsoft\Cryptography`, "MachineGuid")
 		PrintInArma(output, outputSize, r)
-	case "get_HDDUID":
-		PrintInArma(output, outputSize, "deprecated")
 	case "get_Process":
 		PrintInArma(output, outputSize, a.GetProcesses())
 	case "get_MAC":
 		PrintInArma(output, outputSize, a.GetMacAddr())
-	case "get_GUID":
-		r = a.ReadRegistry("current_user", `Software\Classes\mscfile\shell\open\command`, "GUID")
-		PrintInArma(output, outputSize, r)
 	case "get_IP":
 		PrintInArma(output, outputSize, a.GetIP())
 	case "get_GeoIP":
@@ -275,6 +268,11 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 		}()
 		PrintInArma(output, outputSize, "ok")
 	case "1_r":
+		if len(clearArgs) < 4 {
+			a.Logger.Errorf("1_r: not enough arguments")
+			PrintInArma(output, outputSize, "1_r: not enough arguments")
+			return http.StatusConflict
+		}
 		err = a.Reg.WriteReg(clearArgs[0], clearArgs[1], clearArgs[2], clearArgs[3])
 		if err != nil {
 			PrintInArma(output, outputSize, fmt.Sprintf("writeReg: %s", err.Error()))
@@ -282,6 +280,11 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 		}
 		PrintInArma(output, outputSize, "Written")
 	case "2_r":
+		if len(clearArgs) < 3 {
+			a.Logger.Errorf("2_r: not enough arguments")
+			PrintInArma(output, outputSize, "2_r: not enough arguments")
+			return http.StatusConflict
+		}
 		r, err = a.Reg.ReadReg(clearArgs[0], clearArgs[1], clearArgs[2])
 		if err != nil {
 			PrintInArma(output, outputSize, fmt.Sprintf("reg undefined: %s", err.Error()))
@@ -289,6 +292,11 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 		}
 		PrintInArma(output, outputSize, r)
 	case "3_r":
+		if len(clearArgs) < 3 {
+			a.Logger.Errorf("3_r: not enough arguments")
+			PrintInArma(output, outputSize, "3_r: not enough arguments")
+			return http.StatusConflict
+		}
 		err = a.Reg.DeleteReg(clearArgs[0], clearArgs[1], clearArgs[2])
 		if err != nil {
 			PrintInArma(output, outputSize, fmt.Sprintf("deleteReg: %s", err.Error()))
@@ -296,21 +304,36 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 		}
 		PrintInArma(output, outputSize, "Deleted")
 	case "1_f":
-		err = a.Files.WriteFile(clearArgs[0], clearArgs[1])
+		if len(clearArgs) < 2 {
+			a.Logger.Errorf("1_f: not enough arguments")
+			PrintInArma(output, outputSize, "1_f: not enough arguments")
+			return http.StatusConflict
+		}
+		err = a.WriteFile(clearArgs[0], clearArgs[1])
 		if err != nil {
 			PrintInArma(output, outputSize, fmt.Sprintf("writeFile: %s", err.Error()))
 			return http.StatusInternalServerError
 		}
 		PrintInArma(output, outputSize, "Written")
 	case "2_f":
-		r, err = a.Files.ReadFile(clearArgs[0])
+		if len(clearArgs) < 1 {
+			a.Logger.Errorf("2_f: not enough arguments")
+			PrintInArma(output, outputSize, "2_f: not enough arguments")
+			return http.StatusConflict
+		}
+		r, err = a.ReadFile(clearArgs[0])
 		if err != nil {
 			PrintInArma(output, outputSize, fmt.Sprintf("readFile: %s", err.Error()))
 			return http.StatusInternalServerError
 		}
 		PrintInArma(output, outputSize, r)
 	case "3_f":
-		err = a.Files.DeleteFile(clearArgs[0])
+		if len(clearArgs) < 1 {
+			a.Logger.Errorf("3_f: not enough arguments")
+			PrintInArma(output, outputSize, "3_f: not enough arguments")
+			return http.StatusConflict
+		}
+		err = a.DeleteFile(clearArgs[0])
 		if err != nil {
 			PrintInArma(output, outputSize, fmt.Sprintf("deleteFile: %s", err.Error()))
 			return http.StatusInternalServerError

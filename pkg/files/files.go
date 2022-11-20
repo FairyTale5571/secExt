@@ -27,14 +27,14 @@ func (fl *Files) WriteFile(path, data string) error {
 
 	spPath := strings.Split(path, "\\")
 	fPath := strings.Join(spPath[:len(spPath)-1], "\\")
-	err := os.MkdirAll(fPath, os.ModeDir)
-	if err != nil {
+
+	if err := os.MkdirAll(fPath, os.ModeDir); err != nil {
 		fl.logger.Errorf("MkDir Error: %s", err.Error())
 		return fmt.Errorf("MkDir Error: %s", err.Error())
 	}
 
 	if _, err := os.Stat(path); err == nil {
-		return fmt.Errorf("already exist: %s", err.Error())
+		return nil
 	}
 
 	f, err := os.Create(path)

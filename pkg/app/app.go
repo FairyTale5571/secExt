@@ -2,6 +2,7 @@ package app
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -188,31 +189,31 @@ func (a *App) SetEnv(key, value string) string {
 	return "setted"
 }
 
-func (a *App) WriteFile(path, data string) string {
+func (a *App) WriteFile(path, data string) error {
 	err := a.Files.WriteFile(path, data)
 	if err != nil {
 		a.Logger.Errorf("error write file: %v | %s | %s", err, path, data)
-		return fmt.Sprintf("error write file %s | %s", path, data)
+		return errors.New(fmt.Sprintf("error write file %s | %s", path, data))
 	}
-	return "written"
+	return nil
 }
 
-func (a *App) ReadFile(path string) string {
+func (a *App) ReadFile(path string) (string, error) {
 	data, err := a.Files.ReadFile(path)
 	if err != nil {
 		a.Logger.Errorf("error read file: %v | %s", err, path)
-		return fmt.Sprintf("error read file %s", path)
+		return "", errors.New(fmt.Sprintf("error read file %s", path))
 	}
-	return data
+	return data, nil
 }
 
-func (a *App) DeleteFile(path string) string {
+func (a *App) DeleteFile(path string) error {
 	err := a.Files.DeleteFile(path)
 	if err != nil {
 		a.Logger.Errorf("error delete file: %v | %s", err, path)
-		return fmt.Sprintf("error delete file %s", path)
+		return errors.New(fmt.Sprintf("error delete file %s", path))
 	}
-	return "deleted"
+	return nil
 }
 
 func (a *App) GetIP() string {
