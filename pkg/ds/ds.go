@@ -3,102 +3,76 @@ package ds
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/fairytale5571/secExt/pkg/cache"
-	"github.com/fairytale5571/secExt/pkg/logger"
+	"time"
 
 	discord "github.com/SilverCory/golang_discord_rpc"
+	"github.com/fairytale5571/secExt/pkg/cache"
 )
 
 const (
 	AppID = "591067147900289029"
 )
 
-type DS struct {
-	rpc    *discord.RPCConnection
-	logger *logger.Wrapper
-	cache  *cache.Config
+var c *cache.Config
+
+func init() {
+	c = cache.SetupCache()
 }
 
-func New() (*DS, error) {
-	log := logger.New("discord_rpc")
-	rpc := discord.NewRPCConnection(AppID)
-	err := rpc.Open()
-	if err != nil {
-		log.Infof("Error opening connection: %s", err.Error())
-		return nil, err
-	}
-
-	return &DS{
-		rpc:    rpc,
-		logger: log,
-		cache:  cache.SetupCache(),
-	}, nil
-}
-
-func (d *DS) parseData() (string, error) {
-	if d.cache.IsExist("DiscordId") {
-		return d.cache.Get("DiscordId")
-	}
-
-	read, err := d.rpc.Read()
-	if err != nil {
-		return "unknown", err
-	}
-	var str string
-	for _, ch := range read {
-		if ch == 0 {
-			continue
+func GetDsName() string {
+	if c.IsExist("discord_info") {
+		if res, err := c.Get("discord_info"); err == nil {
+			return res
 		}
-		str += string(ch)
-	}
-	str = fmt.Sprint("\n", str)
-
-	if err := d.cache.Set("DiscordId", str); err != nil {
-		d.logger.Infof("Error setting cache: %s", err.Error())
 	}
 
-	return str, nil
-}
+	// объявляем канал с типом string
+	resCh := make(chan string)
 
-func (d *DS) GetID() (string, error) {
-	str, err := d.parseData()
+	win := discord.NewRPCConnection(AppID)
+	err := win.Open()
 	if err != nil {
-		return "unknown", err
-	}
-	var resp map[string]interface{}
-	if err := json.Unmarshal([]byte(str), &resp); err != nil {
-		return "unknown", err
+		return err.Error()
 	}
 
-	data, ok := resp["data"].(map[string]interface{})
-	if !ok {
-		return "unknown", nil
-	}
-	user, ok := data["user"].(map[string]interface{})
-	if !ok {
-		return "unknown", nil
-	}
-	return fmt.Sprintf("%s", user["id"]), nil
-}
+	// создаем таймер с таймаутом в 5 секунд
+	timer := time.NewTimer(5 * time.Second)
 
-func (d *DS) GetUsername() (string, error) {
-	str, err := d.parseData()
-	if err != nil {
-		return "unknown", err
-	}
-	var resp map[string]interface{}
-	if err := json.Unmarshal([]byte(str), &resp); err != nil {
-		return "unknown", err
-	}
+	// запускаем горутину, которая будет читать ответ
+	go func() {
+		_str, err := win.Read()
+		if err != nil {
+			return
+		}
+		str := ""
+		for _, ch := range _str {
+			if ch == 0 {
+				continue
+			}
+			str += string(ch)
+		}
+		str = fmt.Sprint("\n", str)
 
-	data, ok := resp["data"].(map[string]interface{})
-	if !ok {
-		return "unknown", nil
+		var resp map[string]interface{}
+		if err := json.Unmarshal([]byte(str), &resp); err != nil {
+			return
+		}
+
+		data := resp["data"].(map[string]interface{})
+		user := data["user"].(map[string]interface{})
+
+		// отправляем результат в канал
+		resCh <- fmt.Sprintf(`["%s#%s","%s"]`, user["username"], user["discriminator"], user["id"])
+	}()
+
+	// ждем таймер или ответ от горутины
+	select {
+	case <-timer.C:
+		// таймер отработал, возвращаем ошибку
+		return "timeout error"
+	case res := <-resCh:
+		// получили ответ от горутины, возвращаем его
+		c.Set("discord_info", res)
+		return res
 	}
-	user, ok := data["user"].(map[string]interface{})
-	if !ok {
-		return "unknown", nil
-	}
-	return fmt.Sprintf("%s#%s", user["username"], user["discriminator"]), nil
 }

@@ -4,26 +4,15 @@ import (
 	"fmt"
 
 	goip "github.com/FairyTale5571/go-ip-api"
-	"github.com/fairytale5571/secExt/pkg/logger"
 	"github.com/rdegges/go-ipify"
 )
 
-type IP struct {
-	logger *logger.Wrapper
-}
-
-func New() *IP {
-	return &IP{
-		logger: logger.New("ip"),
-	}
-}
-
-func (i *IP) GetGeoIp() string {
+func GetGeoIp() string {
 	client := goip.NewClient()
-	res, err := client.GetLocationForIp(i.GetIp())
+	res, err := client.GetLocationForIp(GetIp())
 	defer res.Close()
 	if err != nil {
-		i.logger.Errorf("Cant get geo ip: %s", err)
+		return "[]"
 	}
 
 	return fmt.Sprintf(`["%s","%s","%s","%s","%s","%s"]`,
@@ -35,10 +24,9 @@ func (i *IP) GetGeoIp() string {
 		res.Zip)
 }
 
-func (i *IP) GetIp() string {
+func GetIp() string {
 	ip, err := ipify.GetIp()
 	if err != nil {
-		i.logger.Errorf("Cant get ip: %s", err)
 		return "Cant get ip"
 	}
 	return ip

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	ttlMemory = 60 * time.Minute
+	ttlMemory = 360 * time.Minute
 )
 
 type Cache interface {

@@ -2,6 +2,7 @@ package wmi
 
 import (
 	"fmt"
+	"github.com/shirou/gopsutil/cpu"
 	"time"
 
 	"github.com/StackExchange/wmi"
@@ -10,13 +11,19 @@ import (
 type Win32Processor struct {
 	ProcessorId string
 	Name        string
-	SystemName  string
 }
 
 func getCPU() ([]Win32Processor, error) {
-	var dst []Win32Processor
-	if err := wmi.Query("SELECT * FROM Win32_Processor", &dst); err != nil {
+	c, err := cpu.Info()
+	if err != nil {
 		return nil, err
+	}
+	var dst []Win32Processor
+	for _, v := range c {
+		dst = append(dst, Win32Processor{
+			ProcessorId: v.PhysicalID,
+			Name:        v.ModelName,
+		})
 	}
 	return dst, nil
 }

@@ -3,6 +3,7 @@ package drive
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"image"
 	"image/png"
@@ -11,8 +12,6 @@ import (
 	"time"
 
 	"github.com/fairytale5571/secExt/pkg/helpers"
-
-	"github.com/disgoorg/disgo/json"
 	"github.com/fairytale5571/secExt/pkg/logger"
 	"github.com/kbinani/screenshot"
 	"golang.org/x/oauth2"

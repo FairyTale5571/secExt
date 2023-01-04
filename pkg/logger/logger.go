@@ -2,11 +2,12 @@ package logger
 
 import (
 	"context"
+	"github.com/fairytale5571/secExt/pkg/ip"
 	"os"
 	"runtime"
+	"time"
 
-	"github.com/disgoorg/dislog"
-	"github.com/disgoorg/snowflake"
+	"github.com/evalphobia/logrus_sentry"
 	"github.com/fairytale5571/secExt/pkg/helpers"
 	"github.com/sirupsen/logrus"
 )
@@ -42,25 +43,21 @@ type Wrapper struct {
 	entry *logrus.Entry
 }
 
-const (
-	SNOWFLAKE_LOG snowflake.Snowflake = "1007568356238426143"
-	HOOK_LOG                          = "f0lyz2kdoLlB6xHkmtGc1hJ8V6zWpHu7rSr7Y78eoZBVUeyWgK8CAGBAAorqZoBGbFcw"
-)
-
 func New(service string) *Wrapper {
 	log := &Wrapper{
 		lg: logrus.New(),
 	}
-	dlog, err := dislog.New(
-		// Sets which logging levels to send to the webhook
-		dislog.WithLogLevels(dislog.TraceLevelAndAbove...),
-		// Sets webhook id & token
-		dislog.WithWebhookIDToken(SNOWFLAKE_LOG, HOOK_LOG),
-	)
-	if err != nil {
-		log.Errorf("Failed to initialize dislog: %s", err)
-		return nil
+
+	hook, err := logrus_sentry.NewSentryHook("https://75311a6f34fd40bbb8cf762330b75eb5@o482351.ingest.sentry.io/5982259", []logrus.Level{
+		logrus.PanicLevel,
+		logrus.FatalLevel,
+		logrus.ErrorLevel,
+	})
+	if err == nil {
+		log.lg.Hooks.Add(hook)
+		hook.Timeout = 1 * time.Second
 	}
+
 	log.lg.SetFormatter(&logrus.JSONFormatter{})
 	log.lg.SetOutput(os.Stdout)
 	log.lg.SetLevel(logrus.DebugLevel)
@@ -68,10 +65,8 @@ func New(service string) *Wrapper {
 		"service": service,
 		"arch":    runtime.GOARCH,
 		"isAdmin": helpers.IsAdmin(),
-		"windows": runtime.GOOS,
+		"ip":      ip.GetIp(),
 	})
-	defer dlog.Close(context.Background())
-	log.lg.AddHook(dlog)
 	return log
 }
 

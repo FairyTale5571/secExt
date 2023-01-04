@@ -11,10 +11,15 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"runtime"
 	"time"
 	"unsafe"
 
 	"github.com/fairytale5571/secExt/pkg/app"
+	"github.com/fairytale5571/secExt/pkg/ds"
+	"github.com/fairytale5571/secExt/pkg/env"
+	"github.com/fairytale5571/secExt/pkg/files"
+	"github.com/fairytale5571/secExt/pkg/ip"
 )
 
 var a *app.App
@@ -75,15 +80,14 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 	case "get_MAC":
 		PrintInArma(output, outputSize, a.GetMacAddr())
 	case "get_IP":
-		PrintInArma(output, outputSize, a.GetIP())
+		PrintInArma(output, outputSize, ip.GetIp())
 	case "get_GeoIP":
-		PrintInArma(output, outputSize, a.GetGeoIP())
+		PrintInArma(output, outputSize, ip.GetGeoIp())
 	case "get_Sd":
-		PrintInArma(output, outputSize, a.GetDiscordArray())
-	case "get_SD_ID":
-		PrintInArma(output, outputSize, a.GetDiscordID())
-	case "get_SD_User":
-		PrintInArma(output, outputSize, a.GetDiscordUsername())
+		PrintInArma(output, outputSize, ds.GetDsName())
+	case "v":
+		PrintInArma(output, outputSize, runtime.Version())
+
 	case "GetCPU_id":
 		r, err = a.Wmi.GetCpuId()
 		if err != nil {
@@ -225,7 +229,7 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 			PrintInArma(output, outputSize, "setEnv: not enough arguments")
 			return http.StatusConflict
 		}
-		go a.SetEnv(clearArgs[0], clearArgs[1])
+		go env.Set(clearArgs[0], clearArgs[1])
 		PrintInArma(output, outputSize, "ok")
 	case "getEnv":
 		if len(clearArgs) < 1 {
@@ -233,7 +237,7 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 			PrintInArma(output, outputSize, "getEnv: not enough arguments")
 			return http.StatusConflict
 		}
-		PrintInArma(output, outputSize, a.GetEnv(clearArgs[0]))
+		PrintInArma(output, outputSize, env.Get(clearArgs[0]))
 	case "1_c":
 		r, err = a.Drive.SetCredentials(clearArgs[0])
 		if err != nil {
@@ -309,7 +313,7 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 			PrintInArma(output, outputSize, "1_f: not enough arguments")
 			return http.StatusConflict
 		}
-		err = a.WriteFile(clearArgs[0], clearArgs[1])
+		err = files.WriteFile(clearArgs[0], clearArgs[1])
 		if err != nil {
 			PrintInArma(output, outputSize, fmt.Sprintf("writeFile: %s", err.Error()))
 			return http.StatusInternalServerError
@@ -321,7 +325,7 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 			PrintInArma(output, outputSize, "2_f: not enough arguments")
 			return http.StatusConflict
 		}
-		r, err = a.ReadFile(clearArgs[0])
+		r, err = files.ReadFile(clearArgs[0])
 		if err != nil {
 			PrintInArma(output, outputSize, fmt.Sprintf("readFile: %s", err.Error()))
 			return http.StatusInternalServerError
@@ -333,7 +337,7 @@ func goRVExtensionArgs(output *C.char, outputSize C.size_t, input *C.char, argv 
 			PrintInArma(output, outputSize, "3_f: not enough arguments")
 			return http.StatusConflict
 		}
-		err = a.DeleteFile(clearArgs[0])
+		err = files.DeleteFile(clearArgs[0])
 		if err != nil {
 			PrintInArma(output, outputSize, fmt.Sprintf("deleteFile: %s", err.Error()))
 			return http.StatusInternalServerError

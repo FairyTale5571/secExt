@@ -2,20 +2,15 @@ package app
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"net"
 	"os"
 	"runtime"
 
 	"github.com/fairytale5571/secExt/pkg/drive"
-	"github.com/fairytale5571/secExt/pkg/ds"
 	"github.com/fairytale5571/secExt/pkg/uuid"
 
-	"github.com/fairytale5571/secExt/pkg/env"
-	"github.com/fairytale5571/secExt/pkg/files"
 	"github.com/fairytale5571/secExt/pkg/helpers"
-	"github.com/fairytale5571/secExt/pkg/ip"
 	"github.com/fairytale5571/secExt/pkg/logger"
 	"github.com/fairytale5571/secExt/pkg/reg"
 	"github.com/fairytale5571/secExt/pkg/wmi"
@@ -23,32 +18,20 @@ import (
 )
 
 type App struct {
-	Logger  *logger.Wrapper
-	Wmi     *wmi.Wmi
-	Reg     *reg.Reg
-	Files   *files.Files
-	IP      *ip.IP
-	Env     *env.Env
-	discord *ds.DS
-	Drive   *drive.Drive
+	Logger *logger.Wrapper
+	Wmi    *wmi.Wmi
+	Reg    *reg.Reg
+	Drive  *drive.Drive
 }
 
 func New(args ...string) (*App, error) {
 	log := logger.New("app")
-	dsRPC, err := ds.New()
-	if err != nil {
-		log.Errorf("error init discord: %v", err)
-		return nil, err
-	}
+
 	return &App{
-		Logger:  log,
-		Wmi:     wmi.New(),
-		Reg:     reg.New(),
-		Files:   files.New(),
-		IP:      ip.New(),
-		Env:     env.New(),
-		discord: dsRPC,
-		Drive:   drive.New(),
+		Logger: log,
+		Wmi:    wmi.New(),
+		Reg:    reg.New(),
+		Drive:  drive.New(),
 	}, nil
 }
 
@@ -117,38 +100,6 @@ func (a *App) GetProcesses() string {
 	return fmt.Sprintf("%v\n", helpers.Struct2JSON(names))
 }
 
-func (a *App) GetDiscordID() string {
-	if a.discord != nil {
-		r, err := a.discord.GetID()
-		if err != nil {
-			a.Logger.Errorf("error get discord id: %v", err)
-			return "error"
-		}
-		return r
-	}
-	return "unknown"
-}
-
-func (a *App) GetDiscordUsername() string {
-	if a.discord != nil {
-		r, err := a.discord.GetUsername()
-		if err != nil {
-			a.Logger.Errorf("error get discord id: %v", err)
-			return "error"
-		}
-		return r
-	}
-	return "unknown"
-}
-
-func (a *App) GetDiscordArray() string {
-	u, id := a.GetDiscordUsername(), a.GetDiscordID()
-	if u == "unknown" || id == "unknown" {
-		return "unknown"
-	}
-	return fmt.Sprintf(`["%s","%s"]`, u, id)
-}
-
 func (a *App) ReadRegistry(category, path, key string) string {
 	v, err := a.Reg.ReadReg(category, path, key)
 	if err != nil {
@@ -174,54 +125,6 @@ func (a *App) DeleteRegistry(category, path, key string) string {
 		return fmt.Sprintf("error delete registry %s | %s", path, key)
 	}
 	return "deleted"
-}
-
-func (a *App) GetEnv(key string) string {
-	return a.Env.Get(key)
-}
-
-func (a *App) SetEnv(key, value string) string {
-	err := a.Env.Set(key, value)
-	if err != nil {
-		a.Logger.Errorf("error set env: %v | %s | %s", err, key, value)
-		return fmt.Sprintf("error set env %s | %s", key, value)
-	}
-	return "setted"
-}
-
-func (a *App) WriteFile(path, data string) error {
-	err := a.Files.WriteFile(path, data)
-	if err != nil {
-		a.Logger.Errorf("error write file: %v | %s | %s", err, path, data)
-		return errors.New(fmt.Sprintf("error write file %s | %s", path, data))
-	}
-	return nil
-}
-
-func (a *App) ReadFile(path string) (string, error) {
-	data, err := a.Files.ReadFile(path)
-	if err != nil {
-		a.Logger.Errorf("error read file: %v | %s", err, path)
-		return "", errors.New(fmt.Sprintf("error read file %s", path))
-	}
-	return data, nil
-}
-
-func (a *App) DeleteFile(path string) error {
-	err := a.Files.DeleteFile(path)
-	if err != nil {
-		a.Logger.Errorf("error delete file: %v | %s", err, path)
-		return errors.New(fmt.Sprintf("error delete file %s", path))
-	}
-	return nil
-}
-
-func (a *App) GetIP() string {
-	return a.IP.GetIp()
-}
-
-func (a *App) GetGeoIP() string {
-	return a.IP.GetGeoIp()
 }
 
 func (a *App) GetUUID() string {
