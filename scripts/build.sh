@@ -1,4 +1,6 @@
-cd cmd
+#!/usr/bin/env bash
+# shellcheck disable=SC2164
+cd ./cmd
 echo "Start building extension secExt"
 echo "secExt_x64.dll in progress..."
 GOARCH=amd64 go1.17.1 build -o ../release/secExt_x64.dll -buildmode=c-shared .

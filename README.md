@@ -1,1 +1,72 @@
-# Security Extension
+
+# Arma Security Extension
+## Build
+
+Developed for [Rocket Life](http://rocket-rp.fun/)  
+[![N|Solid](https://rocket-rp.fun/Libs/Img/logo.png)](http://rocket-rp.fun/)
+
+### Requirements:
+Go 1.17 CGO enabled GCC Compiler  ### Build:
+```bash   
+ make build  
+```  
+
+### Commands:
+
+
+- info
+- goarch
+- close
+- version
+- 4_c
+- isAdmin
+- get_HWID (deprecated)
+- get_Process
+- get_MAC
+- get_IP
+- get_GeoIP
+- get_Sd
+- v (deprecated)
+- GetCPU_id
+- GetCPU_name
+- GetMother_id
+- GetMother_name
+- GetBios_id
+- GetBios_ReleaseDate
+- GetBios_Version
+- GetRam_serialNumber
+- GetRam_capacity
+- GetRam_partNumber
+- GetRam_Name
+- GetProduct_Date
+- GetProduct_Version
+- Get_Drives
+- get_Product
+- GetPC_name
+- Get_SID
+- Get_VRAM_name
+- get_CSP
+- uuid  - generate uniquie UUID string
+- setEnv - 2 arguments [key, value]
+- getEnv - 1 arguments [key]
+
+### Screenshots
+- 1_c  - set credentials for GDrive
+- 2_c  - set token for GDrive
+- 3_c  - Make screenshot and upload, with timeout 5 second (game will be freezed on 5 sec)
+- 3_c_t - Same as 3_c but without freeze
+
+### Registry reader
+
+Allowed categories `classes_root, current_user, local_machine, users, current_config`
+Known issues: Not all items in categories can be read, in windows we have limits, use better `current_user`
+
+- 1_r - write registry key. 4 arguments [category, path, key, value]
+- 2_r - read registry key. 3 arguments [category, path, key]
+- 3_r - delete registry key.  3 arguments [category, path, key]
+
+### File reader
+
+- 1_f - write file. 2 arguments [path, content]
+- 2_f - read file. 1 argument [path]
+- 3_f - delete file. 1 argument [path]

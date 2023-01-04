@@ -62,11 +62,4 @@ fumpt:
 
 build:
 	${call colored,building x64...}
-	GOARCH=amd64 CGO_ENABLED=1 go build -buildmode=c-shared -o release/${NAME}_x64.dll cmd/main.go
-
-	${call colored,building x86...}
-	GOARCH=386 CGO_ENABLED=1 go build -buildmode=c-shared -o release/${NAME}.dll cmd/main.go
-
-test64:
-	cd release && ./callExtension_x64.exe "secExt" callExtension ["Version",[]]
-
+	./scripts/build.sh
