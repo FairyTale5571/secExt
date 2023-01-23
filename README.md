@@ -6,7 +6,9 @@ Developed for [Rocket Life](http://rocket-rp.fun/)
 [![N|Solid](https://rocket-rp.fun/Libs/Img/logo.png)](http://rocket-rp.fun/)
 
 ### Requirements:
-Go 1.17 CGO enabled GCC Compiler  ### Build:
+Go 1.17 CGO enabled GCC Compiler  
+
+### Build:
 ```bash   
  make build  
 ```  
