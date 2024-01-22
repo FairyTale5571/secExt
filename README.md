@@ -3,6 +3,9 @@
 
 [![License: CC BY-ND 4.0](https://img.shields.io/badge/License-CC_BY--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nd/4.0/)
 
+Developed for [Rocket Life - RIP](http://rocket-rp.fun/)  
+<img align="right" alt="logo" src="https://rocket-rp.fun/Libs/Img/logo.png" width="200" height="200" />
+
 ## Disclaimer: 
 
 **Published for informational and educational purposes.**
@@ -18,9 +21,6 @@
 There was a need to detect multi-accounts of players and clarify the characteristics of PC components.
 
 It was both a means to combat cheaters and other dishonest players, and also a means of collecting statistics on the target audience, both in terms of optimizing game functions and monetization.
-
-Developed for [Rocket Life - RIP](http://rocket-rp.fun/)  
-<img align="right" alt="logo" src="https://rocket-rp.fun/Libs/Img/logo.png" width="200" height="200" />
 
 ### Requirements:
 Go 1.17 CGO enabled GCC Compiler  
