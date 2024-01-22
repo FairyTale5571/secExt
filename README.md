@@ -2,9 +2,9 @@
 # Arma Security Extension
 
 [![License: CC BY-ND 4.0](https://img.shields.io/badge/License-CC_BY--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nd/4.0/)
-
-Developed for [Rocket Life - RIP](http://rocket-rp.fun/)  
 <img align="right" alt="logo" src="https://rocket-rp.fun/Libs/Img/logo.png" width="200" height="200" />
+Developed for [Rocket Life - RIP](http://rocket-rp.fun/)  
+
 
 ## Disclaimer: 
 
