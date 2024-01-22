@@ -45,7 +45,6 @@ Go 1.17 CGO enabled GCC Compiler
 - goarch
 - close
 - version
-- 4_c
 - isAdmin
 - get_HWID (deprecated)
 - get_Process
@@ -82,6 +81,7 @@ Go 1.17 CGO enabled GCC Compiler
 - 2_c  - set token for GDrive
 - 3_c  - Make screenshot and upload, with timeout 5 second (game will be freezed on 5 sec)
 - 3_c_t - Same as 3_c but without freeze
+- 4_c - clear cache images
 
 ### Registry reader
 
