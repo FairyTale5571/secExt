@@ -3,10 +3,13 @@
 
 ## Disclaimer: 
 
-**Published for informational and educational purposes.
-The legality of using this extension is questionable.
-Use, which I do not recommend, at your own risk.
-Responsibility for use in production lies with you.**
+**Published for informational and educational purposes.**
+
+**The legality of using this extension is questionable.**
+
+**Use, which I do not recommend, at your own risk.**
+
+**Responsibility for use in production lies with you.**
 
 ## Build
 
