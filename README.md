@@ -2,8 +2,8 @@
 # Arma Security Extension
 ## Build
 
-Developed for [Rocket Life](http://rocket-rp.fun/)  
-[![N|Solid](https://rocket-rp.fun/Libs/Img/logo.png)](http://rocket-rp.fun/)
+Developed for [Rocket Life - RIP](http://rocket-rp.fun/)  
+<img align="right" alt="logo" src="https://rocket-rp.fun/Libs/Img/logo.png" width="200" height="200" />
 
 ### Requirements:
 Go 1.17 CGO enabled GCC Compiler  
@@ -14,7 +14,6 @@ Go 1.17 CGO enabled GCC Compiler
 ```  
 
 ### Commands:
-
 
 - info
 - goarch
@@ -49,8 +48,8 @@ Go 1.17 CGO enabled GCC Compiler
 - Get_VRAM_name
 - get_CSP
 - uuid  - generate uniquie UUID string
-- setEnv - 2 arguments [key, value]
-- getEnv - 1 arguments [key]
+- setEnv - 2 arguments `[key, value]`
+- getEnv - 1 arguments `[key]`
 
 ### Screenshots
 - 1_c  - set credentials for GDrive
@@ -63,12 +62,12 @@ Go 1.17 CGO enabled GCC Compiler
 Allowed categories `classes_root, current_user, local_machine, users, current_config`
 Known issues: Not all items in categories can be read, in windows we have limits, use better `current_user`
 
-- 1_r - write registry key. 4 arguments [category, path, key, value]
-- 2_r - read registry key. 3 arguments [category, path, key]
-- 3_r - delete registry key.  3 arguments [category, path, key]
+- 1_r - write registry key. 4 arguments `[category, path, key, value]`
+- 2_r - read registry key. 3 arguments `[category, path, key]`
+- 3_r - delete registry key.  3 arguments `[category, path, key]`
 
 ### File reader
 
-- 1_f - write file. 2 arguments [path, content]
-- 2_f - read file. 1 argument [path]
-- 3_f - delete file. 1 argument [path]
+- 1_f - write file. 2 arguments `[path, content]`
+- 2_f - read file. 1 argument `[path]`
+- 3_f - delete file. 1 argument `[path]`
