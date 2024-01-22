@@ -11,7 +11,11 @@
 
 **Responsibility for use in production lies with you.**
 
-## Build
+### User story:
+
+There was a need to detect multi-accounts of players and clarify the characteristics of PC components.
+
+It was both a means to combat cheaters and other dishonest players, and also a means of collecting statistics on the target audience, both in terms of optimizing game functions and monetization.
 
 Developed for [Rocket Life - RIP](http://rocket-rp.fun/)  
 <img align="right" alt="logo" src="https://rocket-rp.fun/Libs/Img/logo.png" width="200" height="200" />
