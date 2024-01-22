@@ -1,5 +1,13 @@
 
 # Arma Security Extension
+
+## Disclaimer: 
+
+**Published for informational and educational purposes.
+The legality of using this extension is questionable.
+Use, which I do not recommend, at your own risk.
+Responsibility for use in production lies with you.**
+
 ## Build
 
 Developed for [Rocket Life - RIP](http://rocket-rp.fun/)  
