@@ -25,6 +25,8 @@ There was a need to detect multi-accounts of players and clarify the characteris
 
 It was both a means to combat cheaters and other dishonest players, and also a means of collecting statistics on the target audience, both in terms of optimizing game functions and monetization.
 
+## Слава Україні 🇺🇦
+
 ### Requirements:
 Go 1.17 CGO enabled GCC Compiler  
 
@@ -97,3 +99,4 @@ Known issues: Not all items in categories can be read, in windows we have limits
 - 1_f - write file. 2 arguments `[path, content]`
 - 2_f - read file. 1 argument `[path]`
 - 3_f - delete file. 1 argument `[path]`
+
