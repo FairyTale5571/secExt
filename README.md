@@ -5,6 +5,7 @@
 
 [![License: CC BY-ND 4.0](https://img.shields.io/badge/License-CC_BY--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nd/4.0/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/fairytale5571/secExt)](https://goreportcard.com/report/github.com/fairytale5571/secExt)
+[![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)]
 
 Developed for [Rocket Life - RIP](http://rocket-rp.fun/)  
 
@@ -26,6 +27,9 @@ There was a need to detect multi-accounts of players and clarify the characteris
 It was both a means to combat cheaters and other dishonest players, and also a means of collecting statistics on the target audience, both in terms of optimizing game functions and monetization.
 
 ## Слава Україні 🇺🇦
+
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine/)
+
 
 ### Requirements:
 Go 1.17 CGO enabled GCC Compiler  
