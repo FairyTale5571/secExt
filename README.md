@@ -5,7 +5,7 @@
 
 [![License: CC BY-ND 4.0](https://img.shields.io/badge/License-CC_BY--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nd/4.0/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/fairytale5571/secExt)](https://goreportcard.com/report/github.com/fairytale5571/secExt)
-[![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)]
+[![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://vshymanskyy.github.io/StandWithUkraine/)
 
 Developed for [Rocket Life - RIP](http://rocket-rp.fun/)  
 
